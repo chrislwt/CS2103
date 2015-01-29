@@ -1,2 +1,2 @@
-# TextBuddy
-CS2103 TextBuddy - Individual work
+# CS2103
+CS2103 Individual work
