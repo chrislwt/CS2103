@@ -1,0 +1,13 @@
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+
+public class TextBuddyTest {
+
+	@Test
+	public void testClear() {
+		assertEquals(¡°all content deleted from mytextfile.txt¡±, TextBuddy.executeCommand(¡°clear¡±));
+	}
+
+}

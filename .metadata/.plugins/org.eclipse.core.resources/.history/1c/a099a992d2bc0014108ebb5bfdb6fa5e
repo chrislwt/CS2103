@@ -1,0 +1,16 @@
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+
+
+public class TextBuddyTest {
+
+	@Test
+	public void testExecuteCommand() {
+		TextBuddy.checkFileExist();
+		assertEquals("added to mytextfile.txt : \"software eng\"\n", TextBuddy.executeCommand("add software eng"));
+		
+	}
+
+}

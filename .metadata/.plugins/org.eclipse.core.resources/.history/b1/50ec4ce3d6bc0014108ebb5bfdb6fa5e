@@ -1,0 +1,35 @@
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+
+public class TextBuddyTest {
+	
+	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+
+	public void setUpStreams() {
+	    System.setOut(new PrintStream(outContent));
+	    System.setErr(new PrintStream(errContent));
+	}
+
+	public void cleanUpStreams() {
+	    System.setOut(null);
+	    System.setErr(null);
+	}
+	
+	@Test
+	public void testExecuteCommand() {
+		//to create a text file for testing
+		TextBuddy.checkFileExist();
+		
+	//	assertEquals("\nadded to mytextfile.txt : \"software eng\"\n", TextBuddy.executeCommand("add software eng"));
+		TextBuddy.executeCommand("display");
+		assertEquals("1. software eng",outContent.toString());
+		
+	}
+
+}
