@@ -1,10 +1,11 @@
-import java.io.IOException;
 import java.util.Scanner;
+import java.util.Vector;
+import java.io.IOException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.File;
-import java.util.*;
+
 
 /**
  * This class is used to store and retrieve text from a text file entered by the user.
@@ -17,7 +18,7 @@ import java.util.*;
 
 public class TextBuddy {
 	
-	private static final String WELCOME_MESSAGE = "\nWelcome to TextBuddy. %1$s is ready for use\n";
+	private static final String MESSAGE_WELCOME = "\nWelcome to TextBuddy. %1$s is ready for use\n";
 	private static final String MESSAGE_ADDED = "\nadded to %1$s : \"%2$s\"\n";
 	private static final String MESSAGE_DELETED = "\ndeleted from %1$s : \"%2$s\"\n";
 	private static final String MESSAGE_CLEARED = "\nall content deleted from %1s\n";
@@ -34,6 +35,7 @@ public class TextBuddy {
 	 * text file will be processed.
 	 */
 	private static Scanner scanner = new Scanner(System.in);
+	
 	/*
 	 * This variable is declared for the whole class so any methods can access
 	 * to the file status any time needed.This variable is used to determine
@@ -64,19 +66,18 @@ public class TextBuddy {
 	 * This operation is used to check if text file exist
 	 * if yes, it will append else it will create the file
 	 * 
-	 * @param fileName
-	 *            is the full string user has entered as the argument
+	 * @param fileName is the full string user has entered as the argument
 	 * @return the welcome message
 	 */
 	private static String checkFileExist(String fileName) {
 		File textFile = new File(fileName);
 		
-		if(!(textFile.isFile())){
+		if(!(textFile.isFile())) {
 			fileStatus = false;
 			clearFile(fileName, fileStatus);
 		}
 		
-		return String.format(WELCOME_MESSAGE,fileName);
+		return String.format(MESSAGE_WELCOME,fileName);
 	}
 	
 	private static String executeCommand(String userCommand, String fileName) {
@@ -88,8 +89,9 @@ public class TextBuddy {
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
 			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
 		}
-		else
+		else {
 			userText = "";
+		}
 		
 		COMMAND_TYPE commandType = determineCommandType(userCommand);
 		
@@ -152,12 +154,14 @@ public class TextBuddy {
 			e.printStackTrace();
 		}
 		finally {
-			if(pw != null)
+			if(pw != null) {
 				pw.close();
+			}
 		}
 		
-		if(fileStatus)
+		if(fileStatus) {
 			return String.format(MESSAGE_CLEARED, fileName);
+		}
 		
 		return null;
 	}
@@ -168,23 +172,24 @@ public class TextBuddy {
 		
 		try {
 			sc = new Scanner(new FileReader(fileName));
-			while(sc.hasNextLine()){
-				System.out.println("");
-				System.out.println(sc.nextLine());
+			while(sc.hasNextLine()) {
+				showToUser("");
+				showToUser(sc.nextLine());
 				empty = false;
 			}
 			
 			if(empty) {
-				System.out.println("");
-				System.out.println(fileName+" is empty");
+				showToUser("");
+				showToUser(fileName+" is empty");
 			}		
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 		}
 		finally {
-			if(sc!= null)
+			if(sc!= null) {
 				sc.close();
+			}
 		}
 	} 
 	
@@ -198,7 +203,7 @@ public class TextBuddy {
 		try {
 			sc = new Scanner(new FileReader(fileName));
 			
-			while(sc.hasNextLine()){
+			while(sc.hasNextLine()) {
 				content = sc.nextLine();
 				trimmedContent = content.substring(content.indexOf(' ')+1);
 				data.addElement(trimmedContent);
@@ -206,11 +211,13 @@ public class TextBuddy {
 			
 			clearFile(fileName,true);
 			
-			for(int index=0; index < data.size(); index++){
-				if(index != line)
+			for(int index=0; index < data.size(); index++) {
+				if(index != line) {
 					addText(fileName,data.elementAt(index));
-				else
+				}
+				else {
 					content = data.elementAt(index);
+				}
 			}
 	
 		}
@@ -218,8 +225,9 @@ public class TextBuddy {
 			e.printStackTrace();
 		}
 		finally {
-			if(sc!= null)
+			if(sc!= null) {
 				sc.close();
+			}
 		}
 		
 		return String.format(MESSAGE_DELETED, fileName, content);
@@ -233,7 +241,7 @@ public class TextBuddy {
 		try {
 			sc = new Scanner(new FileReader(fileName));
 
-			while(sc.hasNextLine()){
+			while(sc.hasNextLine()) {
 				line++;
 				sc.nextLine();
 			}
@@ -245,10 +253,13 @@ public class TextBuddy {
 			e.printStackTrace();
 		}
 		finally {
-			if(sc!= null)
+			if(sc!= null) {
 				sc.close();
-			if(editedFile != null)
+			}
+			
+			if(editedFile != null) {
 				editedFile.close();
+			}
 		}
 		
 		return String.format(MESSAGE_ADDED, fileName, userText);		
