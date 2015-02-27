@@ -342,7 +342,7 @@ public class TextBuddy {
 			}
 
 			clearFile(true);
-			Collections.sort(sortedData, String.CASE_INSENSITIVE_ORDER);
+			Collections.sort(sortedData);
 
 			for(int index = 0; index < sortedData.size(); index++) {
 				addText(sortedData.elementAt(index));
