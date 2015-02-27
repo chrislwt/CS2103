@@ -151,6 +151,8 @@ public class TextBuddy {
 			return COMMAND_TYPE.CLEAR_TEXT;
 		case "sort":
 			return COMMAND_TYPE.SORT_TEXT;
+		case "search":
+			return COMMAND_TYPE.SEARCH_TEXT;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:

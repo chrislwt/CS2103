@@ -15,7 +15,7 @@ import java.io.File;
  * existing file or create a new one. The file is saved after every command user entered.
 
 
- * @author Christina Lee Wei Ting A0098824N
+ * @author Christina Lee Wei Ting
  */
 
 public class TextBuddy {
@@ -29,10 +29,10 @@ public class TextBuddy {
 	
 	// These are the possible command types
 	enum COMMAND_TYPE {
-		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, INVALID, EXIT
+		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, INVALID, EXIT
 	};
 	
-	/**
+	/*
 	 * This variable is declared for the whole class (instead of declaring it
 	 * inside the readUserCommand() method to facilitate automated testing using
 	 * the I/O redirection technique. If not, only the first line of the input
@@ -40,7 +40,7 @@ public class TextBuddy {
 	 */
 	private static Scanner scanner = new Scanner(System.in);
 	
-	/**
+	/*
 	 * This variable is declared for the whole class so any methods can access
 	 * to the file status any time needed.This variable is used to determine
 	 * if the file is currently meant for CLEAR or DELETE command
@@ -115,9 +115,6 @@ public class TextBuddy {
 				return clearFile(true);	
 		case SORT_TEXT:
 				return sortFile();
-		case SEARCH_TEXT:
-				searchFile(userText);
-				return "";
 		case EXIT:
 			System.exit(0);	
 		default:
@@ -322,51 +319,5 @@ public class TextBuddy {
 		}
 		
 		return String.format(MESSAGE_SORTED,fileName);
-	}
-	
-	private static void searchFile(String userText) {
-		Scanner sc = null;
-		showToUser("Search results for '"+userText+"' :");
-		String content = null;
-		String trimmedContent = null;
-		int line = 0;
-		boolean empty = true;
-		boolean isFound = false;
-		
-		try {
-			sc = new Scanner(new FileReader(fileName));
-			while(sc.hasNextLine()) {
-				empty = false;
-				content = sc.nextLine();
-				trimmedContent = content.substring(content.indexOf(' ')+1);
-				if(trimmedContent.matches(userText)) {
-					showToUser("");
-					showToUser(line+1+": "+trimmedContent);
-					line++;
-					isFound = true;
-				}
-			}
-			
-			if(empty) {
-				showToUser("");
-				showToUser(fileName+" is empty");
-			}
-			
-			if(!isFound) {
-				showToUser("");
-				showToUser("No results found.");
-			}
-		}
-		
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-		
-		finally {
-			if(sc!= null) {
-				sc.close();
-			}
-		}
-		
 	}
 }
