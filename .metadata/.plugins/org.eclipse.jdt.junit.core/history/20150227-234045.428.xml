@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="TextBuddySortTest" project="TextBuddy" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="TextBuddySortTest" time="0.035">
-    <testcase name="testExecuteCommand" classname="TextBuddySortTest" time="0.035"/>
-  </testsuite>
-</testrun>
