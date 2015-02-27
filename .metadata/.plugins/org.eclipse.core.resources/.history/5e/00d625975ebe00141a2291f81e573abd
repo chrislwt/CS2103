@@ -20,7 +20,7 @@ public class TextBuddyTest {
 	//	TextBuddy.executeCommand("display");
 		
 	
-		TextBuddy.executeCommand("search software");
+		TextBuddy.executeCommand("search soft");
 
 	}
 	
