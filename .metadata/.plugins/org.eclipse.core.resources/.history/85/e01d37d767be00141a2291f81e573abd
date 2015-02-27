@@ -35,8 +35,7 @@ public class TextBuddy {
 	private static String content = null;
 	private static String trimmedContent = null;
 	private static boolean fileStatus = false;
-	private static Scanner scanner = new Scanner(System.in);
-	
+
 	// These are the possible command types
 	enum COMMAND_TYPE {
 		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, INVALID, EXIT
@@ -51,10 +50,11 @@ public class TextBuddy {
 		}
 
 		showToUser(checkFileExist());	
+		sc = new Scanner(System.in);
 
 		while (true) {
 			System.out.print("command: ");
-			String command = scanner.nextLine();
+			String command = sc.nextLine();
 			String userCommand = command;
 			String feedback = executeCommand(userCommand);
 			showToUser(feedback);
@@ -321,6 +321,7 @@ public class TextBuddy {
 	}
 
 	private static void searchFile(String userText) {
+		int line = 0;
 		boolean empty = true;
 		boolean isFound = false;
 
@@ -330,9 +331,11 @@ public class TextBuddy {
 			while(sc.hasNextLine()) {
 				empty = false;
 				content = sc.nextLine();
-				if(content.contains(userText)) {
+				trimmedContent = trimText(content);
+				if(trimmedContent.contains(userText)) {
 					showToUser("");
-					showToUser(content);
+					showToUser(line+1+": "+trimmedContent);
+					line++;
 					isFound = true;
 				}
 			}

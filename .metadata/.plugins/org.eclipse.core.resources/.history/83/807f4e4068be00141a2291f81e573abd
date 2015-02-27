@@ -321,6 +321,7 @@ public class TextBuddy {
 	}
 
 	private static void searchFile(String userText) {
+		int line = 0;
 		boolean empty = true;
 		boolean isFound = false;
 
@@ -330,9 +331,11 @@ public class TextBuddy {
 			while(sc.hasNextLine()) {
 				empty = false;
 				content = sc.nextLine();
-				if(content.contains(userText)) {
+				trimmedContent = trimText(content);
+				if(trimmedContent.contains(userText)) {
 					showToUser("");
-					showToUser(content);
+					showToUser(line+1+": "+trimmedContent);
+					line++;
 					isFound = true;
 				}
 			}
