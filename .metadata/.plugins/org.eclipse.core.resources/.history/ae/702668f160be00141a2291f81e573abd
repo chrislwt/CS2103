@@ -15,13 +15,13 @@ public class TextBuddyTest {
 		//test sort
 		assertEquals("\nadded to mytextfile.txt : \"software eng\"\n", TextBuddy.executeCommand("add software eng"));
 		assertEquals("\nadded to mytextfile.txt : \"christina lee\"\n", TextBuddy.executeCommand("add christina lee"));
-//
-//		TextBuddy.executeCommand("display");
-//		TextBuddy.executeCommand("sort");
-//		TextBuddy.executeCommand("display");
+
+		TextBuddy.executeCommand("display");
+		TextBuddy.executeCommand("sort");
+		TextBuddy.executeCommand("display");
 		
 		//test search
-		TextBuddy.executeCommand("search software");
+		TextBuddy.executeCommand("search abc");
 
 	}
 	

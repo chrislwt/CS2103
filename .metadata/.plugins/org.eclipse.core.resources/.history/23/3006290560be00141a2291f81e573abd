@@ -11,7 +11,7 @@ import java.io.File;
 
 /**
  * This class is used to store and retrieve text from a text file entered by the user.
- * User can add, delete, clear, sort and search contents through commands. User can choose to work on an
+ * User can add, delete and clear contents through commands. User can choose to work on an
  * existing file or create a new one. The file is saved after every command user entered.
 
 
@@ -34,7 +34,7 @@ public class TextBuddy {
 	
 	/**
 	 * This variable is declared for the whole class (instead of declaring it
-	 * inside the excecuteUserCommand() method to facilitate automated testing using
+	 * inside the readUserCommand() method to facilitate automated testing using
 	 * the I/O redirection technique. If not, only the first line of the input
 	 * text file will be processed.
 	 */
@@ -328,6 +328,7 @@ public class TextBuddy {
 	
 	private static void searchFile(String userText) {
 		Scanner sc = null;
+		showToUser("Search results for '"+userText+"' :");
 		String content = null;
 		String trimmedContent = null;
 		int line = 0;
@@ -335,7 +336,6 @@ public class TextBuddy {
 		boolean isFound = false;
 		
 		try {
-			showToUser("Search results for '"+userText+"' :");
 			sc = new Scanner(new FileReader(fileName));
 			while(sc.hasNextLine()) {
 				empty = false;
@@ -354,7 +354,7 @@ public class TextBuddy {
 				showToUser(fileName+" is empty");
 			}
 			
-			if(!isFound && !empty) {
+			if(!isFound) {
 				showToUser("");
 				showToUser("No results found.");
 			}
