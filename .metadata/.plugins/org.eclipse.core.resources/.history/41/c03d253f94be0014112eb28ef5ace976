@@ -89,8 +89,8 @@ public class TextBuddy {
 		userCommand = userCommand.trim();
 		String userText = "";
 		
-		if(userCommand.toLowerCase().equals("add") || userCommand.toLowerCase().equals("delete") || 
-				userCommand.toLowerCase().equals("search")) {
+		if(!(userCommand.toLowerCase().equals("add") || userCommand.toLowerCase().equals("delete") || 
+				userCommand.toLowerCase().equals("search"))) {
 			
 			showToUser("");
 			showToUser("Content cannot be empty!");

@@ -88,16 +88,8 @@ public class TextBuddy {
 
 		userCommand = userCommand.trim();
 		String userText = "";
-		
-		if(userCommand.toLowerCase().equals("add") || userCommand.toLowerCase().equals("delete") || 
-				userCommand.toLowerCase().equals("search")) {
-			
-			showToUser("");
-			showToUser("Content cannot be empty!");
-			return "";
-		}
 
-		else if(!(userCommand.toLowerCase().equals("sort") || userCommand.toLowerCase().equals("clear") || 
+		if(!(userCommand.toLowerCase().equals("sort") || userCommand.toLowerCase().equals("clear") || 
 				userCommand.toLowerCase().equals("display") || userCommand.toLowerCase().equals("exit"))) {
 
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
@@ -176,12 +168,7 @@ public class TextBuddy {
 	private static String trimText(String originalText) {
 		return originalText.substring(originalText.indexOf(' ')+1);
 	}
-	
-	/**
-	 * This operation count the number of  lines in the text
-	 * 
-	 * @return count
-	 */
+
 	private static int getCount(){
 		
 		try {

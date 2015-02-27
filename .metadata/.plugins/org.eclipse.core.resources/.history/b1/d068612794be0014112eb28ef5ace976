@@ -88,23 +88,20 @@ public class TextBuddy {
 
 		userCommand = userCommand.trim();
 		String userText = "";
-		
-		if(userCommand.toLowerCase().equals("add") || userCommand.toLowerCase().equals("delete") || 
-				userCommand.toLowerCase().equals("search")) {
-			
-			showToUser("");
-			showToUser("Content cannot be empty!");
-			return "";
-		}
 
-		else if(!(userCommand.toLowerCase().equals("sort") || userCommand.toLowerCase().equals("clear") || 
-				userCommand.toLowerCase().equals("display") || userCommand.toLowerCase().equals("exit"))) {
+		try {
+			if(!(userCommand.toLowerCase().equals("sort") || userCommand.toLowerCase().equals("clear") || 
+					userCommand.toLowerCase().equals("display") || userCommand.toLowerCase().equals("exit"))) {
 
-			userText = userCommand.substring(userCommand.indexOf(' ')+1);
-			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
-		}
-		else {
-			userText = "";
+				userText = userCommand.substring(userCommand.indexOf(' ')+1);
+				userCommand = userCommand.substring(0, userCommand.indexOf(' '));
+			}
+			else {
+				userText = "";
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userCommand);
