@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.Collections;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -158,11 +159,35 @@ public class TextBuddy {
 
 	}
 
+	/**
+	 * This operation remove the line numbers in the text
+	 * 
+	 * @param originalText
+	 *            original text found in the textfile
+	 */
 	private static String trimText(String originalText) {
 
 		return originalText.substring(originalText.indexOf(' ')+1);
 	}
 
+	private static int getCount(){
+		
+		try {
+			sc = new Scanner(new FileReader(fileName));
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		int count = 0;
+		while(sc.hasNextLine()) {
+			count++;
+			sc.nextLine();		
+		}
+		
+		return count;
+	}
+	
 	private static String clearFile(boolean fileStatus) {
 		PrintWriter pw = null;
 
@@ -214,10 +239,15 @@ public class TextBuddy {
 	private static String deleteText(String userText) {
 		int line = Integer.parseInt(userText) - 1;
 		Vector<String> data = new Vector<String>();
-
+		
+		if(line >= getCount()) {
+			showToUser("");
+			showToUser("Invalid line number.");
+			return "";
+		}
+		
 		try {
 			sc = new Scanner(new FileReader(fileName));
-
 			while(sc.hasNextLine()) {
 				content = sc.nextLine();
 				trimmedContent = trimText(content);
