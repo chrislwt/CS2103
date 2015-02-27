@@ -11,7 +11,7 @@ public class TextBuddyTest {
 	public void testExcecuteCommand() {
 		//to create a text file for testing
 		TextBuddy.checkFileExist();
-		
+
 		//test sort
 		assertEquals("\nadded to mytextfile.txt : \"software eng\"\n", TextBuddy.executeCommand("add software eng"));
 		assertEquals("\nadded to mytextfile.txt : \"christina lee\"\n", TextBuddy.executeCommand("add christina lee"));
@@ -28,12 +28,8 @@ public class TextBuddyTest {
 		TextBuddy.executeCommand("display");
 		assertEquals("\ndeleted from mytextfile.txt : \"christina lee\"\n", TextBuddy.executeCommand("delete 2"));
 		TextBuddy.executeCommand("display");
-		
 
 	}
-
-
-			
 
 
 
