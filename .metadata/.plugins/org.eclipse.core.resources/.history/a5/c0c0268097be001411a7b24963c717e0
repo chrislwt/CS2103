@@ -37,7 +37,7 @@ public class TextBuddy {
 	private static String trimmedContent = null;
 	private static boolean fileStatus = false;
 	private static Scanner scanner = new Scanner(System.in);
-
+	
 	// These are the possible command types
 	enum COMMAND_TYPE {
 		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, INVALID, EXIT
@@ -88,10 +88,10 @@ public class TextBuddy {
 
 		userCommand = userCommand.trim();
 		String userText = "";
-
+		
 		if(userCommand.toLowerCase().equals("add") || userCommand.toLowerCase().equals("delete") || 
 				userCommand.toLowerCase().equals("search")) {
-
+			
 			showToUser("");
 			showToUser("Content cannot be empty!");
 			return "";
@@ -176,30 +176,30 @@ public class TextBuddy {
 	private static String trimText(String originalText) {
 		return originalText.substring(originalText.indexOf(' ')+1);
 	}
-
+	
 	/**
 	 * This operation count the number of  lines in the text
 	 * 
 	 * @return count
 	 */
 	private static int getCount(){
-
+		
 		try {
 			sc = new Scanner(new FileReader(fileName));
 		} 
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
+		
 		int count = 0;
 		while(sc.hasNextLine()) {
 			count++;
 			sc.nextLine();		
 		}
-
+		
 		return count;
 	}
-
+	
 	private static String clearFile(boolean fileStatus) {
 		PrintWriter pw = null;
 
@@ -251,13 +251,13 @@ public class TextBuddy {
 	private static String deleteText(String userText) {
 		int line = Integer.parseInt(userText) - 1;
 		Vector<String> data = new Vector<String>();
-
+		
 		if(line >= getCount()) {
 			showToUser("");
 			showToUser("Invalid line number.");
 			return "";
 		}
-
+		
 		try {
 			sc = new Scanner(new FileReader(fileName));
 			while(sc.hasNextLine()) {
