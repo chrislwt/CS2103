@@ -341,7 +341,7 @@ public class TextBuddy {
 				empty = false;
 				content = sc.nextLine();
 				trimmedContent = content.substring(content.indexOf(' ')+1);
-				if(trimmedContent.contains(userText)) {
+				if(trimmedContent.matches(userText)) {
 					showToUser("");
 					showToUser(line+1+": "+trimmedContent);
 					line++;
