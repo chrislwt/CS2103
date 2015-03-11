@@ -34,9 +34,9 @@ public class TextBuddy {
 	private static final String MESSAGE_NORESULTS = "\nNo results found.\n";
 	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
 	private static final String MESSAGE_ERROR = "Unrecogonized command type";
-	private static final String MESSAGE_INVALIDlineNum = "Invalid lineNum number.";
+	private static final String MESSAGE_INVALIDLINE = "Invalid line number.";
 	private static final String MESSAGE_COMMAND = "\ncommand: ";
-	private static final String MESSAGE_NEWlineNum = "\n";
+	private static final String MESSAGE_NEWLINE = "\n";
 	private static final String MESSAGE_NOCHAR = "";
 	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
 	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
@@ -104,14 +104,14 @@ public class TextBuddy {
 
 		if(userCommand.matches(PATTERN_COMMANDS_TYPE1)) {
 			showToUser(MESSAGE_EMPTYCONTENT);
-			return MESSAGE_NEWlineNum;
+			return MESSAGE_NEWLINE;
 
 		} else if(!(userCommand.matches(PATTERN_COMMANDS_TYPE2))) {
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
 			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
 
 		} else {
-			userText = MESSAGE_NEWlineNum;
+			userText = MESSAGE_NEWLINE;
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userCommand);
@@ -177,7 +177,7 @@ public class TextBuddy {
 	}
 
 	/**
-	 * This operation remove the lineNum numbers in the text
+	 * This operation remove the line numbers in the text
 	 * 
 	 * @param originalText
 	 *            original text found in the textfile
@@ -187,7 +187,7 @@ public class TextBuddy {
 	}
 
 	/**
-	 * This operation count the number of lineNums in the text
+	 * This operation count the number of lines in the text
 	 * 
 	 * @return count
 	 */
@@ -227,14 +227,12 @@ public class TextBuddy {
 		boolean emptyFile;
 		dataFromFile.clear();
 		dataFromFile = readDataFromFile();
-		
 		if(dataFromFile.isEmpty()) {
 			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
 			emptyFile = true;
 		} else {
 			emptyFile = false;
 		}
-		
 		return emptyFile;
 	}
 
@@ -268,13 +266,13 @@ public class TextBuddy {
 	}
 
 	private static String deleteText(String userText) {
-		int lineNum = Integer.parseInt(userText) - 1;
+		int line = Integer.parseInt(userText) - 1;
 		dataFromFile.clear();
 
-		if(lineNum >= getCount()) {
-			showToUser(MESSAGE_NEWlineNum);
-			showToUser(MESSAGE_INVALIDlineNum);
-			return MESSAGE_NOCHAR;
+		if(line >= getCount()) {
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(MESSAGE_INVALIDLINE);
+			return "";
 		}
 
 		dataFromFile = readDataFromFile();
@@ -282,7 +280,7 @@ public class TextBuddy {
 		clearFile(true);
 
 		for(int index=0; index < dataFromFile.size(); index++) {
-			if(index != lineNum) {
+			if(index != line) {
 				addText(dataFromFile.elementAt(index));
 			} else {
 				content = dataFromFile.elementAt(index);
@@ -294,18 +292,18 @@ public class TextBuddy {
 
 	private static String addText(String userText) {
 		PrintWriter editedFile = null;
-		int lineNum = 0;
+		int line = 0;
 
 		try {
 			sc = new Scanner(new FileReader(fileName));
 
 			while(sc.hasNextLine()) {
-				lineNum++;
+				line++;
 				sc.nextLine();
 			}
 
 			editedFile = new PrintWriter(new FileWriter(fileName, true));
-			editedFile.println((lineNum+1)+". "+ userText);
+			editedFile.println((line+1)+". "+ userText);
 
 		} catch(IOException e) {
 			e.printStackTrace();

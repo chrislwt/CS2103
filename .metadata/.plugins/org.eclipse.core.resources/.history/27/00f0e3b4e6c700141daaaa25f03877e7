@@ -69,7 +69,7 @@ public class TextBuddy {
 
 		while (true) {
 			showToUser(MESSAGE_COMMAND);
-			String command = scanner.nextLine();
+			String command = scanner.nextlineNum();
 			String userCommand = command;
 			String feedback = executeCommand(userCommand);
 			showToUser(feedback);
