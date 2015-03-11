@@ -1,6 +1,4 @@
-import java.util.LinkedHashSet;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.Vector;
 import java.util.Collections;
 import java.io.FileNotFoundException;
@@ -26,22 +24,19 @@ public class TextBuddy {
 	private static final String MESSAGE_WELCOME = "\nWelcome to TextBuddy. %1$s is ready for use\n";
 	private static final String MESSAGE_ADDED = "\nadded to %1$s : \"%2$s\"\n";
 	private static final String MESSAGE_DELETED = "\ndeleted from %1$s : \"%2$s\"\n";
-	private static final String MESSAGE_CLEARED = "\nall content deleted from %1$s\n";
+	private static final String MESSAGE_CLEARED = "\nall content deleted from %1s\n";
 	private static final String MESSAGE_SORTED = "\n%1$s is sorted\n";
 	private static final String MESSAGE_SEARCHED = "\nSearch results for \"%1$s\" :\n";
 	private static final String MESSAGE_DISPLAY = "\n%1$s. %2$s\n";
-	private static final String MESSAGE_REMOVEDUPLICATE = "\nDuplicates removed from %1$s\n";
 	private static final String MESSAGE_NORESULTS = "\nNo results found.\n";
 	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
 	private static final String MESSAGE_ERROR = "Unrecogonized command type";
 	private static final String MESSAGE_INVALIDLINE = "Invalid line number.";
 	private static final String MESSAGE_COMMAND = "\ncommand: ";
-	private static final String MESSAGE_NEWLINE = "\n";
-	private static final String MESSAGE_NOCHAR = "";
-	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
 	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
-	private static final String PATTERN_COMMANDS_TYPE2 = "clear|sort|exit|display|compact";
-
+	private static final String PATTERN_COMMANDS_TYPE2 = "clear|sort|exit|display";
+	private static final String MESSAGE_NEWLINE = "\n";
+	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
 
 	/**
 	 * These variables are declared for the whole class so any methods can access
@@ -56,7 +51,7 @@ public class TextBuddy {
 
 	// These are the possible command types
 	enum COMMAND_TYPE {
-		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, COMPACT_TEXT, INVALID, EXIT
+		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, INVALID, EXIT
 	};
 
 	public static void main(String[] args) {
@@ -105,11 +100,11 @@ public class TextBuddy {
 		if(userCommand.matches(PATTERN_COMMANDS_TYPE1)) {
 			showToUser(MESSAGE_EMPTYCONTENT);
 			return MESSAGE_NEWLINE;
-
+			
 		} else if(!(userCommand.matches(PATTERN_COMMANDS_TYPE2))) {
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
 			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
-
+			
 		} else {
 			userText = MESSAGE_NEWLINE;
 		}
@@ -130,8 +125,6 @@ public class TextBuddy {
 			return sortFile();
 		case SEARCH_TEXT:
 			return searchFile(userText).toString();
-		case COMPACT_TEXT:
-			return removeDuplicates();
 		case EXIT:
 			System.exit(0);	
 		default:
@@ -169,8 +162,6 @@ public class TextBuddy {
 			return COMMAND_TYPE.SORT_TEXT;
 		case "search":
 			return COMMAND_TYPE.SEARCH_TEXT;
-		case "compact":
-			return COMMAND_TYPE.COMPACT_TEXT;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -186,19 +177,6 @@ public class TextBuddy {
 	 */
 	private static String trimText(String originalText) {
 		return originalText.substring(originalText.indexOf(' ')+1);
-	}
-
-
-
-	/**
-	 * This operation count the number of  lines in the text
-	 * 
-	 * @return count
-	 */
-
-	private static int getCount(){
-		dataFromFile = readDataFromFile();
-		return dataFromFile.size();
 	}
 
 	public static Vector<String> readDataFromFile() {
@@ -225,21 +203,18 @@ public class TextBuddy {
 		return dataFromFile;
 	}
 
-	private static boolean processDataFromFile() {
-		boolean emptyFile;
-		dataFromFile.clear();
-		dataFromFile = readDataFromFile();
-		if(dataFromFile.isEmpty()) {
-			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
-			emptyFile = true;
-		} else {
-			emptyFile = false;
-		}
-		return emptyFile;
+	/**
+	 * This operation count the number of  lines in the text
+	 * 
+	 * @return count
+	 */
 
+	private static int getCount(){
+		dataFromFile = readDataFromFile();
+		return dataFromFile.size();
 	}
 
-	private static String clearFile(boolean isClearCommand) {
+	private static String clearFile(boolean isFile) {
 		PrintWriter pw = null;
 
 		try {
@@ -253,7 +228,7 @@ public class TextBuddy {
 			}
 		}
 
-		if(isClearCommand) {
+		if(isFile) {
 			return String.format(MESSAGE_CLEARED, fileName);
 		}
 
@@ -261,15 +236,18 @@ public class TextBuddy {
 	}
 
 	private static void displayFile() {
-		processDataFromFile();
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
 		for(int index = 0; index < dataFromFile.size(); index++) {
 			showToUser(String.format(MESSAGE_DISPLAY, index+1, dataFromFile.elementAt(index)));
 		}
 
+		if(dataFromFile.isEmpty()) {
+			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
+		}		
 
-
-	}
+	} 
 
 	private static String deleteText(String userText) {
 		int line = Integer.parseInt(userText) - 1;
@@ -327,9 +305,15 @@ public class TextBuddy {
 	}
 
 	public static String sortFile() {
-		if(!processDataFromFile()) {
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
-			clearFile(false);
+		if(dataFromFile.isEmpty()) {
+			return String.format(MESSAGE_EMPTYFILE, fileName);
+		}
+
+		else {
+			clearFile(true);
 
 			Collections.sort(dataFromFile, String.CASE_INSENSITIVE_ORDER);
 
@@ -338,11 +322,7 @@ public class TextBuddy {
 			}
 
 			return String.format(MESSAGE_SORTED,fileName);
-
-		} else {
-			return MESSAGE_NOCHAR;
 		}
-
 	}
 
 	private static StringBuilder searchFile(String userText) {
@@ -350,8 +330,8 @@ public class TextBuddy {
 		dataFromFile.clear();
 		dataFromFile = readDataFromFile();
 		StringBuilder searchResults = new StringBuilder();
-
-		if(!processDataFromFile()) {
+		
+		if(!dataFromFile.isEmpty()) {
 			showToUser(String.format(MESSAGE_SEARCHED, userText));
 
 			for(int index = 0; index < dataFromFile.size(); index++) {
@@ -361,34 +341,15 @@ public class TextBuddy {
 				}
 			}
 
-			if(!isFound) {
-				searchResults.append(MESSAGE_NORESULTS);
-			}
-
-		} 
-
-		return searchResults;
-	}
-
-	private static String removeDuplicates() {
-
-		Set<String> uniqueData = new LinkedHashSet<String>();
-		if(!processDataFromFile()) {
-			uniqueData.addAll(dataFromFile);
-
-			dataFromFile.clear();
-			dataFromFile.addAll(uniqueData);
-			clearFile(false);
-
-			for(int index = 0; index < dataFromFile.size(); index++) {
-				addText(dataFromFile.elementAt(index));
-			}
-			return String.format(MESSAGE_REMOVEDUPLICATE,fileName);
-		
 		} else {
-			return MESSAGE_NOCHAR;
+			searchResults.append(String.format(MESSAGE_EMPTYFILE, fileName));
 		}
+
+		if(!isFound && !dataFromFile.isEmpty()) {
+			searchResults.append(MESSAGE_NORESULTS);
+		}
+		
+		return searchResults;
+		
 	}
-
-
 }

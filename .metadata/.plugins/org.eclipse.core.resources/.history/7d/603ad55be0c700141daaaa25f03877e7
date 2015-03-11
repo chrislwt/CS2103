@@ -7,40 +7,29 @@ import org.junit.Test;
 
 public class TextBuddyTest {
 
-	private static Vector<String> sortedList = new Vector<String>();
-	private static Vector<String> compactedList = new Vector<String>();
-	private static String testFile = "testFile.txt";
+	private static Vector<String> testData = new Vector<String>();
+	private String testFile = "testFile.txt";
 
 	@Test
 	public void test() {
 		generateSortedData();
-		generateCompactedData();
 		TextBuddy.fileName = testFile;
 		TextBuddy.checkFileExist();
 		testAll();
 	}
+
 
 	private static void testAll() {
 		testClearMethod();
 		testAddMethod();
 		testSortMethod();
 		testSearchMethod();
-		testCompactMethod();
 	}
-	
 	private static void generateSortedData() {
-		sortedList.add("brown fox");
-		sortedList.add("jumped over");
-		sortedList.add("lazy dog");
-		sortedList.add("The quick");
-		sortedList.add("The quick");
-	}
-	
-	private static void generateCompactedData() {
-		compactedList.add("brown fox");
-		compactedList.add("jumped over");
-		compactedList.add("lazy dog");
-		compactedList.add("The quick");
+		testData.add("brown fox");
+		testData.add("jumped over");
+		testData.add("lazy dog");
+		testData.add("The quick");
 	}
 
 	private static void testClearMethod() {
@@ -52,20 +41,19 @@ public class TextBuddyTest {
 				TextBuddy.executeCommand("add lazy dog"));
 		assertEquals("\nadded to testFile.txt : \"brown fox\"\n",
 				TextBuddy.executeCommand("add brown fox"));
-		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
-				TextBuddy.executeCommand("add The quick"));
-		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
-				TextBuddy.executeCommand("add The quick"));
 		assertEquals("\nadded to testFile.txt : \"jumped over\"\n",
 				TextBuddy.executeCommand("add jumped over"));
-
+		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
+				TextBuddy.executeCommand("add The quick"));
+		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
+				TextBuddy.executeCommand("add The quick"));
 	}
 
 	private static void testSortMethod() {
 		TextBuddy.executeCommand("sort");
 		Vector<String> sortedData = TextBuddy.readDataFromFile();
 		for(int index = 0; index < sortedData.size(); index++) {
-			assertEquals("Data sorted.", sortedList.elementAt(index),sortedData.elementAt(index));
+			assertEquals("Data sorted.",testData.elementAt(index),sortedData.elementAt(index));
 		}
 	}
 
@@ -78,7 +66,7 @@ public class TextBuddyTest {
 		TextBuddy.executeCommand("compact");
 		Vector<String> compactedData = TextBuddy.readDataFromFile();
 		for(int index = 0; index < compactedData.size(); index++) {
-			assertEquals("Data compacted.", compactedList.elementAt(index), compactedData.elementAt(index));
+			assertEquals("Data compacted.", testData.elementAt(index), compactedData.elementAt(index));
 		}
 	}
 

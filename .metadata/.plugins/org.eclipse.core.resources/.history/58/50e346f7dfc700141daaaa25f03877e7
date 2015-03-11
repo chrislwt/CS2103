@@ -37,7 +37,6 @@ public class TextBuddy {
 	private static final String MESSAGE_INVALIDLINE = "Invalid line number.";
 	private static final String MESSAGE_COMMAND = "\ncommand: ";
 	private static final String MESSAGE_NEWLINE = "\n";
-	private static final String MESSAGE_NOCHAR = "";
 	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
 	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
 	private static final String PATTERN_COMMANDS_TYPE2 = "clear|sort|exit|display|compact";
@@ -188,19 +187,6 @@ public class TextBuddy {
 		return originalText.substring(originalText.indexOf(' ')+1);
 	}
 
-
-
-	/**
-	 * This operation count the number of  lines in the text
-	 * 
-	 * @return count
-	 */
-
-	private static int getCount(){
-		dataFromFile = readDataFromFile();
-		return dataFromFile.size();
-	}
-
 	public static Vector<String> readDataFromFile() {
 		String content = null;
 		Vector<String> dataFromFile = new Vector<String>();
@@ -225,21 +211,26 @@ public class TextBuddy {
 		return dataFromFile;
 	}
 
-	private static boolean processDataFromFile() {
-		boolean emptyFile;
-		dataFromFile.clear();
-		dataFromFile = readDataFromFile();
-		if(dataFromFile.isEmpty()) {
-			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
-			emptyFile = true;
-		} else {
-			emptyFile = false;
-		}
-		return emptyFile;
+	/**
+	 * This operation count the number of  lines in the text
+	 * 
+	 * @return count
+	 */
 
+	private static int getCount(){
+		dataFromFile = readDataFromFile();
+		return dataFromFile.size();
 	}
 
-	private static String clearFile(boolean isClearCommand) {
+	private static String checkDataEmpty() {
+		if(dataFromFile.isEmpty()) {
+			return String.format(MESSAGE_EMPTYFILE, fileName);
+		} else {
+			return null;
+		}
+	}
+
+	private static String clearFile(boolean isFile) {
 		PrintWriter pw = null;
 
 		try {
@@ -253,7 +244,7 @@ public class TextBuddy {
 			}
 		}
 
-		if(isClearCommand) {
+		if(isFile) {
 			return String.format(MESSAGE_CLEARED, fileName);
 		}
 
@@ -261,15 +252,18 @@ public class TextBuddy {
 	}
 
 	private static void displayFile() {
-		processDataFromFile();
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
 		for(int index = 0; index < dataFromFile.size(); index++) {
 			showToUser(String.format(MESSAGE_DISPLAY, index+1, dataFromFile.elementAt(index)));
 		}
 
+		if(dataFromFile.isEmpty()) {
+			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
+		}		
 
-
-	}
+	} 
 
 	private static String deleteText(String userText) {
 		int line = Integer.parseInt(userText) - 1;
@@ -327,21 +321,20 @@ public class TextBuddy {
 	}
 
 	public static String sortFile() {
-		if(!processDataFromFile()) {
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
-			clearFile(false);
+		checkDataEmpty();
 
-			Collections.sort(dataFromFile, String.CASE_INSENSITIVE_ORDER);
+		clearFile(false);
 
-			for(int index = 0; index < dataFromFile.size(); index++) {
-				addText(dataFromFile.elementAt(index));
-			}
+		Collections.sort(dataFromFile, String.CASE_INSENSITIVE_ORDER);
 
-			return String.format(MESSAGE_SORTED,fileName);
-
-		} else {
-			return MESSAGE_NOCHAR;
+		for(int index = 0; index < dataFromFile.size(); index++) {
+			addText(dataFromFile.elementAt(index));
 		}
+
+		return String.format(MESSAGE_SORTED,fileName);
 
 	}
 
@@ -351,7 +344,7 @@ public class TextBuddy {
 		dataFromFile = readDataFromFile();
 		StringBuilder searchResults = new StringBuilder();
 
-		if(!processDataFromFile()) {
+		if(!dataFromFile.isEmpty()) {
 			showToUser(String.format(MESSAGE_SEARCHED, userText));
 
 			for(int index = 0; index < dataFromFile.size(); index++) {
@@ -361,33 +354,35 @@ public class TextBuddy {
 				}
 			}
 
-			if(!isFound) {
-				searchResults.append(MESSAGE_NORESULTS);
-			}
+		} else {
+			searchResults.append(String.format(MESSAGE_EMPTYFILE, fileName));
+		}
 
-		} 
+		if(!isFound && !dataFromFile.isEmpty()) {
+			searchResults.append(MESSAGE_NORESULTS);
+		}
 
 		return searchResults;
+
 	}
 
 	private static String removeDuplicates() {
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
+		checkDataEmpty();
 		Set<String> uniqueData = new LinkedHashSet<String>();
-		if(!processDataFromFile()) {
-			uniqueData.addAll(dataFromFile);
+		uniqueData.addAll(dataFromFile);
 
-			dataFromFile.clear();
-			dataFromFile.addAll(uniqueData);
-			clearFile(false);
+		dataFromFile.clear();
+		dataFromFile.addAll(uniqueData);
+		clearFile(false);
 
-			for(int index = 0; index < dataFromFile.size(); index++) {
-				addText(dataFromFile.elementAt(index));
-			}
-			return String.format(MESSAGE_REMOVEDUPLICATE,fileName);
-		
-		} else {
-			return MESSAGE_NOCHAR;
+		for(int index = 0; index < dataFromFile.size(); index++) {
+			addText(dataFromFile.elementAt(index));
 		}
+		return String.format(MESSAGE_REMOVEDUPLICATE,fileName);
+
 	}
 
 

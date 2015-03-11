@@ -9,7 +9,7 @@ public class TextBuddyTest {
 
 	private static Vector<String> sortedList = new Vector<String>();
 	private static Vector<String> compactedList = new Vector<String>();
-	private static String testFile = "testFile.txt";
+	private String testFile = "testFile.txt";
 
 	@Test
 	public void test() {
@@ -20,6 +20,7 @@ public class TextBuddyTest {
 		testAll();
 	}
 
+
 	private static void testAll() {
 		testClearMethod();
 		testAddMethod();
@@ -27,7 +28,6 @@ public class TextBuddyTest {
 		testSearchMethod();
 		testCompactMethod();
 	}
-	
 	private static void generateSortedData() {
 		sortedList.add("brown fox");
 		sortedList.add("jumped over");

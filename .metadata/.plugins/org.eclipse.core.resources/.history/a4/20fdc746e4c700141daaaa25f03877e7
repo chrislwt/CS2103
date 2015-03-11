@@ -9,25 +9,24 @@ public class TextBuddyTest {
 
 	private static Vector<String> sortedList = new Vector<String>();
 	private static Vector<String> compactedList = new Vector<String>();
-	private static String testFile = "testFile.txt";
+	private String testFile = "testFile.txt";
 
 	@Test
 	public void test() {
 		generateSortedData();
-		generateCompactedData();
 		TextBuddy.fileName = testFile;
 		TextBuddy.checkFileExist();
 		testAll();
 	}
+
 
 	private static void testAll() {
 		testClearMethod();
 		testAddMethod();
 		testSortMethod();
 		testSearchMethod();
-		testCompactMethod();
+	//	testCompactMethod();
 	}
-	
 	private static void generateSortedData() {
 		sortedList.add("brown fox");
 		sortedList.add("jumped over");
@@ -65,7 +64,7 @@ public class TextBuddyTest {
 		TextBuddy.executeCommand("sort");
 		Vector<String> sortedData = TextBuddy.readDataFromFile();
 		for(int index = 0; index < sortedData.size(); index++) {
-			assertEquals("Data sorted.", sortedList.elementAt(index),sortedData.elementAt(index));
+			assertEquals("Data sorted.",testData.elementAt(index),sortedData.elementAt(index));
 		}
 	}
 
