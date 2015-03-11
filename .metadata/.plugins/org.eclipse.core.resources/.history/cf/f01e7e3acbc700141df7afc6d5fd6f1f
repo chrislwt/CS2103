@@ -38,7 +38,7 @@ public class TextBuddy {
 	 * These variables are declared for the whole class so any methods can access
 	 * 
 	 */
-	public static String fileName = "mytextfile.txt";
+	private static String fileName = "mytextfile.txt";
 	private static String content = null;
 	private static Scanner sc = null;
 	private static Scanner scanner = new Scanner(System.in);

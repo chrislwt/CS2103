@@ -38,7 +38,7 @@ public class TextBuddy {
 	 * These variables are declared for the whole class so any methods can access
 	 * 
 	 */
-	public static String fileName = "mytextfile.txt";
+	private static String fileName = "mytextfile.txt";
 	private static String content = null;
 	private static Scanner sc = null;
 	private static Scanner scanner = new Scanner(System.in);
@@ -176,7 +176,7 @@ public class TextBuddy {
 		return originalText.substring(originalText.indexOf(' ')+1);
 	}
 
-	public static Vector<String> readDataFromFile() {
+	private static Vector<String> readDataFromFile() {
 		String content = null;
 		Vector<String> dataFromFile = new Vector<String>();
 		dataFromFile.clear();
@@ -317,7 +317,7 @@ public class TextBuddy {
 		return String.format(MESSAGE_ADDED, fileName, userText);		
 	}
 
-	public static String sortFile() {
+	private static String sortFile() {
 		dataFromFile.clear();
 		dataFromFile = readDataFromFile();
 
