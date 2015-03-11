@@ -6,28 +6,36 @@ import org.junit.Test;
 
 
 public class TextBuddyTest {
-//	private TextBuddy textB;
-	
+
 	private static Vector<String> testData = new Vector<String>();
 	private String testFile = "testFile.txt";
-	
+
 	@Test
 	public void test() {
 		generateSortedData();
 		TextBuddy.fileName = testFile;
 		TextBuddy.checkFileExist();
-		testAddMethod();
-		testSortMethod();
+		testAll();
 	}
 
-	
-	private static void generateSortedData(){
+
+	private static void testAll() {
+		testClearMethod();
+		testAddMethod();
+		testSortMethod();
+		testSearchMethod();
+	}
+	private static void generateSortedData() {
 		testData.add("brown fox");
 		testData.add("jumped over");
 		testData.add("lazy dog");
 		testData.add("The quick");
 	}
-	
+
+	private static void testClearMethod() {
+		assertEquals("\nall content deleted from testFile.txt\n", TextBuddy.executeCommand("clear"));
+	}
+
 	private static void testAddMethod() {
 		assertEquals("\nadded to testFile.txt : \"lazy dog\"\n",
 				TextBuddy.executeCommand("add lazy dog"));
@@ -38,14 +46,19 @@ public class TextBuddyTest {
 		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
 				TextBuddy.executeCommand("add The quick"));
 	}
-	
-	private static void testSortMethod(){
+
+	private static void testSortMethod() {
 		TextBuddy.executeCommand("sort");
 		Vector<String> sortedData = TextBuddy.readDataFromFile();
 		for(int index = 0; index < sortedData.size(); index++) {
 			assertEquals("Data sorted.",testData.elementAt(index),sortedData.elementAt(index));
 		}
 	}
-	
-	
+
+	private static void testSearchMethod() {
+		assertEquals("\n1. brown fox\n",TextBuddy.executeCommand("search bro"));
+		assertEquals("\nNo results found.\n", TextBuddy.executeCommand("search abc"));
+	}
+
+
 }

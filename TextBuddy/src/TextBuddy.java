@@ -27,6 +27,8 @@ public class TextBuddy {
 	private static final String MESSAGE_CLEARED = "\nall content deleted from %1s\n";
 	private static final String MESSAGE_SORTED = "\n%1$s is sorted\n";
 	private static final String MESSAGE_SEARCHED = "Search results for \"%1$s\" :";
+	private static final String MESSAGE_RESULTS = "\n%1$s. %2$s\n";
+	private static final String MESSAGE_NORESULTS = "\nNo results found.\n";
 	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
 	private static final String MESSAGE_ERROR = "Unrecogonized command type";
 	private static final String MESSAGE_INVALIDLINE = "Invalid line number.";
@@ -120,8 +122,7 @@ public class TextBuddy {
 		case SORT_TEXT:
 			return sortFile();
 		case SEARCH_TEXT:
-			searchFile(userText);
-			return "";
+			return searchFile(userText).toString();
 		case EXIT:
 			System.exit(0);	
 		default:
@@ -338,11 +339,12 @@ public class TextBuddy {
 		}
 	}
 
-	private static void searchFile(String userText) {
+	private static StringBuilder searchFile(String userText) {
 		boolean isFound = false;
 		dataFromFile.clear();
 		dataFromFile = readDataFromFile();
-
+		StringBuilder searchResults = new StringBuilder();
+		
 		if(!dataFromFile.isEmpty()) {
 			showToUser(MESSAGE_NEWLINE);
 			showToUser(String.format(MESSAGE_SEARCHED, userText));
@@ -351,20 +353,19 @@ public class TextBuddy {
 			for(int index = 0; index < dataFromFile.size(); index++) {
 				if(dataFromFile.elementAt(index).contains(userText)) {
 					isFound = true;
-					showToUser(MESSAGE_NEWLINE);
-					showToUser(index+1+". "+dataFromFile.elementAt(index));
-					showToUser(MESSAGE_NEWLINE);
+					searchResults.append(String.format(MESSAGE_RESULTS, index+1, dataFromFile.elementAt(index)));
 				}
 			}
 
 		} else {
-			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
+			searchResults.append(String.format(MESSAGE_EMPTYFILE, fileName));
 		}
 
 		if(!isFound && !dataFromFile.isEmpty()) {
-			showToUser(MESSAGE_NEWLINE);
-			showToUser("No results found.");
-			showToUser(MESSAGE_NEWLINE);
+			searchResults.append(MESSAGE_NORESULTS);
 		}
+		
+		return searchResults;
+		
 	}
 }
