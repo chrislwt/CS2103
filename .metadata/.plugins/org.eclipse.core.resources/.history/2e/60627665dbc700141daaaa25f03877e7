@@ -26,17 +26,15 @@ public class TextBuddy {
 	private static final String MESSAGE_DELETED = "\ndeleted from %1$s : \"%2$s\"\n";
 	private static final String MESSAGE_CLEARED = "\nall content deleted from %1s\n";
 	private static final String MESSAGE_SORTED = "\n%1$s is sorted\n";
-	private static final String MESSAGE_SEARCHED = "\nSearch results for \"%1$s\" :\n";
-	private static final String MESSAGE_DISPLAY = "\n%1$s. %2$s\n";
+	private static final String MESSAGE_SEARCHED = "Search results for \"%1$s\" :";
+	private static final String MESSAGE_RESULTS = "\n%1$s. %2$s\n";
 	private static final String MESSAGE_NORESULTS = "\nNo results found.\n";
 	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
 	private static final String MESSAGE_ERROR = "Unrecogonized command type";
 	private static final String MESSAGE_INVALIDLINE = "Invalid line number.";
-	private static final String MESSAGE_COMMAND = "\ncommand: ";
 	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
 	private static final String PATTERN_COMMANDS_TYPE2 = "clear|sort|exit|display";
 	private static final String MESSAGE_NEWLINE = "\n";
-	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
 
 	/**
 	 * These variables are declared for the whole class so any methods can access
@@ -63,7 +61,8 @@ public class TextBuddy {
 		showToUser(checkFileExist());	
 
 		while (true) {
-			showToUser(MESSAGE_COMMAND);
+			//	showToUser(MESSAGE_NEWLINE);
+			showToUser("\ncommand: ");
 			String command = scanner.nextLine();
 			String userCommand = command;
 			String feedback = executeCommand(userCommand);
@@ -98,13 +97,12 @@ public class TextBuddy {
 		String userText = "";
 
 		if(userCommand.matches(PATTERN_COMMANDS_TYPE1)) {
-			showToUser(MESSAGE_EMPTYCONTENT);
+			showToUser(MESSAGE_NEWLINE);
+			showToUser("Content cannot be empty!");
 			return MESSAGE_NEWLINE;
-			
 		} else if(!(userCommand.matches(PATTERN_COMMANDS_TYPE2))) {
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
 			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
-			
 		} else {
 			userText = MESSAGE_NEWLINE;
 		}
@@ -129,7 +127,7 @@ public class TextBuddy {
 			System.exit(0);	
 		default:
 			//throw an error if the command is not recognized
-			throw new Error(MESSAGE_ERROR);
+			throw new Error("Unrecognized command type");
 		}
 
 	}
@@ -237,10 +235,13 @@ public class TextBuddy {
 
 	private static void displayFile() {
 		dataFromFile.clear();
+
 		dataFromFile = readDataFromFile();
 
 		for(int index = 0; index < dataFromFile.size(); index++) {
-			showToUser(String.format(MESSAGE_DISPLAY, index+1, dataFromFile.elementAt(index)));
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(index+1 +". "+dataFromFile.elementAt(index));
+			showToUser(MESSAGE_NEWLINE);
 		}
 
 		if(dataFromFile.isEmpty()) {
@@ -266,7 +267,8 @@ public class TextBuddy {
 		for(int index=0; index < dataFromFile.size(); index++) {
 			if(index != line) {
 				addText(dataFromFile.elementAt(index));
-			} else {
+			}
+			else {
 				content = dataFromFile.elementAt(index);
 			}
 		}
@@ -332,12 +334,14 @@ public class TextBuddy {
 		StringBuilder searchResults = new StringBuilder();
 		
 		if(!dataFromFile.isEmpty()) {
+			showToUser(MESSAGE_NEWLINE);
 			showToUser(String.format(MESSAGE_SEARCHED, userText));
+			showToUser(MESSAGE_NEWLINE);
 
 			for(int index = 0; index < dataFromFile.size(); index++) {
 				if(dataFromFile.elementAt(index).contains(userText)) {
 					isFound = true;
-					searchResults.append(String.format(MESSAGE_DISPLAY, index+1, dataFromFile.elementAt(index)));
+					searchResults.append(String.format(MESSAGE_RESULTS, index+1, dataFromFile.elementAt(index)));
 				}
 			}
 
