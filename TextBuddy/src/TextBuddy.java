@@ -26,26 +26,31 @@ public class TextBuddy {
 	private static final String MESSAGE_DELETED = "\ndeleted from %1$s : \"%2$s\"\n";
 	private static final String MESSAGE_CLEARED = "\nall content deleted from %1s\n";
 	private static final String MESSAGE_SORTED = "\n%1$s is sorted\n";
+	private static final String MESSAGE_SEARCHED = "Search results for \"%1$s\" :";
+	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
+	private static final String MESSAGE_ERROR = "Unrecogonized command type";
+	private static final String MESSAGE_INVALIDLINE = "Invalid line number.";
+	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
+	private static final String PATTERN_COMMANDS_TYPE2 = "clear|sort|exit|display";
+	private static final String MESSAGE_NEWLINE = "\n";
 
 	/**
-	 * This variable is declared for the whole class so any methods can access
-	 * to the file status any time needed.This variable is used to determine
+	 * These variables are declared for the whole class so any methods can access
+	 * 
 	 */
 	private static String fileName = "mytextfile.txt";
-	private static Scanner sc = null;
 	private static String content = null;
-	private static String trimmedContent = null;
-	private static boolean fileStatus = false;
+	private static Scanner sc = null;
 	private static Scanner scanner = new Scanner(System.in);
+	private static boolean isFileExist = false;
+	private static Vector<String> dataFromFile = new Vector<String>();
 
 	// These are the possible command types
 	enum COMMAND_TYPE {
 		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, INVALID, EXIT
 	};
 
-
 	public static void main(String[] args) {
-
 		//if user did not input any filename, the default one will be assumed.
 		if(args.length != 0) {
 			fileName = args[0];
@@ -54,7 +59,8 @@ public class TextBuddy {
 		showToUser(checkFileExist());	
 
 		while (true) {
-			System.out.print("command: ");
+			//	showToUser(MESSAGE_NEWLINE);
+			showToUser("\ncommand: ");
 			String command = scanner.nextLine();
 			String userCommand = command;
 			String feedback = executeCommand(userCommand);
@@ -63,7 +69,7 @@ public class TextBuddy {
 	}
 
 	private static void showToUser(String text) {
-		System.out.println(text);
+		System.out.print(text);
 	}
 
 	/**
@@ -77,34 +83,26 @@ public class TextBuddy {
 		File textFile = new File(fileName);
 
 		if(!(textFile.isFile())) {
-			fileStatus = false;
-			clearFile(fileStatus);
+			isFileExist = false;
+			clearFile(isFileExist);
 		}
 
 		return String.format(MESSAGE_WELCOME,fileName);
 	}
 
 	public static String executeCommand(String userCommand) {
-
 		userCommand = userCommand.trim();
 		String userText = "";
 
-		if(userCommand.toLowerCase().equals("add") || userCommand.toLowerCase().equals("delete") || 
-				userCommand.toLowerCase().equals("search")) {
-
-			showToUser("");
+		if(userCommand.matches(PATTERN_COMMANDS_TYPE1)) {
+			showToUser(MESSAGE_NEWLINE);
 			showToUser("Content cannot be empty!");
-			return "";
-		}
-
-		else if(!(userCommand.toLowerCase().equals("sort") || userCommand.toLowerCase().equals("clear") || 
-				userCommand.toLowerCase().equals("display") || userCommand.toLowerCase().equals("exit"))) {
-
+			return MESSAGE_NEWLINE;
+		} else if(!(userCommand.matches(PATTERN_COMMANDS_TYPE2))) {
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
 			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
-		}
-		else {
-			userText = "";
+		} else {
+			userText = MESSAGE_NEWLINE;
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userCommand);
@@ -141,10 +139,12 @@ public class TextBuddy {
 	 *            is the first word of the user command
 	 */
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
-		if(commandTypeString.equals(null))
-			throw new Error("Unregonized command type");
-		else
+		if(commandTypeString.equals(null)) {
+			throw new Error(MESSAGE_ERROR);
+		}
+		else {
 			commandTypeString = commandTypeString.toLowerCase();
+		}
 
 		switch(commandTypeString) {
 		case "add":
@@ -164,7 +164,6 @@ public class TextBuddy {
 		default:
 			return COMMAND_TYPE.INVALID;
 		}
-
 	}
 
 	/**
@@ -177,45 +176,68 @@ public class TextBuddy {
 		return originalText.substring(originalText.indexOf(' ')+1);
 	}
 
+	private static Vector<String> readDataFromFile() {
+		String content = null;
+		Vector<String> dataFromFile = new Vector<String>();
+		dataFromFile.clear();
+
+		try {
+			sc = new Scanner(new FileReader(fileName));
+			while(sc.hasNextLine()) {
+				content = sc.nextLine();
+				content = trimText(content);
+				dataFromFile.add(content);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		finally {
+			if(sc!= null) {
+				sc.close();
+			}
+		}
+
+		return dataFromFile;
+	}
+
 	/**
 	 * This operation count the number of  lines in the text
 	 * 
 	 * @return count
 	 */
+
 	private static int getCount(){
+		int count = 0;
 
 		try {
 			sc = new Scanner(new FileReader(fileName));
+			while(sc.hasNextLine()) {
+				count++;
+				sc.nextLine();		
+			}
 		} 
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		int count = 0;
-		while(sc.hasNextLine()) {
-			count++;
-			sc.nextLine();		
-		}
-
 		return count;
 	}
 
-	private static String clearFile(boolean fileStatus) {
+	private static String clearFile(boolean isFile) {
 		PrintWriter pw = null;
 
 		try {
 			pw = new PrintWriter(fileName);
-		}
-		catch(IOException e) {
+
+		} catch(IOException e) {
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			if(pw != null) {
 				pw.close();
 			}
 		}
 
-		if(fileStatus) {
+		if(isFile) {
 			return String.format(MESSAGE_CLEARED, fileName);
 		}
 
@@ -223,68 +245,42 @@ public class TextBuddy {
 	}
 
 	private static void displayFile() {
-		boolean empty = true;
+		dataFromFile.clear();
 
-		try {
-			sc = new Scanner(new FileReader(fileName));
-			while(sc.hasNextLine()) {
-				showToUser("");
-				showToUser(sc.nextLine());
-				empty = false;
-			}
+		dataFromFile = readDataFromFile();
 
-			if(empty) {
-				showToUser("");
-				showToUser(fileName+" is empty");
-			}		
+		for(int index = 0; index < dataFromFile.size(); index++) {
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(index+1 +". "+dataFromFile.elementAt(index));
+			showToUser(MESSAGE_NEWLINE);
 		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-		finally {
-			if(sc!= null) {
-				sc.close();
-			}
-		}
+
+		if(dataFromFile.isEmpty()) {
+			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
+		}		
+
 	} 
 
 	private static String deleteText(String userText) {
 		int line = Integer.parseInt(userText) - 1;
-		Vector<String> data = new Vector<String>();
+		dataFromFile.clear();
 
 		if(line >= getCount()) {
-			showToUser("");
-			showToUser("Invalid line number.");
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(MESSAGE_INVALIDLINE);
 			return "";
 		}
 
-		try {
-			sc = new Scanner(new FileReader(fileName));
-			while(sc.hasNextLine()) {
-				content = sc.nextLine();
-				trimmedContent = trimText(content);
-				data.addElement(trimmedContent);
+		dataFromFile = readDataFromFile();
+
+		clearFile(true);
+
+		for(int index=0; index < dataFromFile.size(); index++) {
+			if(index != line) {
+				addText(dataFromFile.elementAt(index));
 			}
-
-			clearFile(true);
-
-			for(int index=0; index < data.size(); index++) {
-				if(index != line) {
-					addText(data.elementAt(index));
-				}
-				else {
-					content = data.elementAt(index);
-				}
-			}
-		}
-
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-
-		finally {
-			if(sc!= null) {
-				sc.close();
+			else {
+				content = dataFromFile.elementAt(index);
 			}
 		}
 
@@ -305,11 +301,10 @@ public class TextBuddy {
 
 			editedFile = new PrintWriter(new FileWriter(fileName, true));
 			editedFile.println((line+1)+". "+ userText);
-		}
-		catch(IOException e) {
+
+		} catch(IOException e) {
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			if(sc!= null) {
 				sc.close();
 			}
@@ -323,82 +318,53 @@ public class TextBuddy {
 	}
 
 	private static String sortFile() {
-		boolean empty = true;
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
-		Vector<String> sortedData = new Vector<String>();
+		if(dataFromFile.isEmpty()) {
+			return String.format(MESSAGE_EMPTYFILE, fileName);
+		}
 
-		try {
-			sc = new Scanner(new FileReader(fileName));
-			while(sc.hasNextLine()) {
-				empty = false;
-				content = sc.nextLine();
-				trimmedContent = trimText(content);
-				sortedData.addElement(trimmedContent);
-			}
-
-			if(empty) {
-				showToUser("");
-				showToUser(fileName+" is empty");
-			}
-
+		else {
 			clearFile(true);
-			Collections.sort(sortedData, String.CASE_INSENSITIVE_ORDER);
 
-			for(int index = 0; index < sortedData.size(); index++) {
-				addText(sortedData.elementAt(index));
+			Collections.sort(dataFromFile, String.CASE_INSENSITIVE_ORDER);
+
+			for(int index = 0; index < dataFromFile.size(); index++) {
+				addText(dataFromFile.elementAt(index));
 			}
-		}
 
-		catch(IOException e) {
-			e.printStackTrace();
+			return String.format(MESSAGE_SORTED,fileName);
 		}
-
-		finally {
-			if(sc!= null) {
-				sc.close();
-			}
-		}
-
-		return String.format(MESSAGE_SORTED,fileName);
 	}
 
 	private static void searchFile(String userText) {
-		boolean empty = true;
 		boolean isFound = false;
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
 
-		try {
-			showToUser("Search results for '"+userText+"' :");
-			sc = new Scanner(new FileReader(fileName));
-			while(sc.hasNextLine()) {
-				empty = false;
-				content = sc.nextLine();
-				if(content.contains(userText)) {
-					showToUser("");
-					showToUser(content);
+		if(!dataFromFile.isEmpty()) {
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(String.format(MESSAGE_SEARCHED, userText));
+			showToUser(MESSAGE_NEWLINE);
+
+			for(int index = 0; index < dataFromFile.size(); index++) {
+				if(dataFromFile.elementAt(index).contains(userText)) {
 					isFound = true;
+					showToUser(MESSAGE_NEWLINE);
+					showToUser(index+1+". "+dataFromFile.elementAt(index));
+					showToUser(MESSAGE_NEWLINE);
 				}
 			}
 
-			if(empty) {
-				showToUser("");
-				showToUser(fileName+" is empty");
-			}
-
-			if(!isFound && !empty) {
-				showToUser("");
-				showToUser("No results found.");
-			}
+		} else {
+			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
 		}
 
-		catch(IOException e) {
-			e.printStackTrace();
+		if(!isFound && !dataFromFile.isEmpty()) {
+			showToUser(MESSAGE_NEWLINE);
+			showToUser("No results found.");
+			showToUser(MESSAGE_NEWLINE);
 		}
-
-		finally {
-			if(sc!= null) {
-				sc.close();
-			}
-		}
-
 	}
 }
