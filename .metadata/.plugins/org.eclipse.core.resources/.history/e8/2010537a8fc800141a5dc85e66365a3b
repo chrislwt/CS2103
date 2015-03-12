@@ -1,0 +1,86 @@
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.util.Vector;
+
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class TextBuddyTest {
+
+	public Vector<String> sortedList = new Vector<String>();
+	public Vector<String> compactedList = new Vector<String>();
+	public String testFile = "testFile.txt";
+
+	@Test
+	public void test() throws IOException {
+		generateSortedData();
+		generateCompactedData();
+		TextBuddy.fileName = testFile;
+		TextBuddy.checkFileExist();
+		TextBuddy.clearFile(true);
+	}
+
+	private void generateSortedData() {
+		sortedList.addElement("brown fox");
+		sortedList.addElement("jumped over");
+		sortedList.addElement("lazy dog");
+		sortedList.addElement("The quick");
+		sortedList.addElement("The quick");
+	}
+
+	private void generateCompactedData() {
+		compactedList.add("lazy dog");
+		compactedList.add("brown fox");
+		compactedList.add("The quick");
+		compactedList.add("jumped over");
+	}
+
+	@Test
+	public void testAddMethod() {
+		assertEquals("\nadded to testFile.txt : \"lazy dog\"\n",
+				TextBuddy.executeCommand("add lazy dog"));
+		assertEquals("\nadded to testFile.txt : \"brown fox\"\n",
+				TextBuddy.executeCommand("add brown fox"));
+		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
+				TextBuddy.executeCommand("add The quick"));
+		assertEquals("\nadded to testFile.txt : \"The quick\"\n",
+				TextBuddy.executeCommand("add The quick"));
+		assertEquals("\nadded to testFile.txt : \"jumped over\"\n",
+				TextBuddy.executeCommand("add jumped over"));
+
+	}
+
+	@Test
+	public void testSortMethod() {
+		generateSortedData();
+		TextBuddy.executeCommand("sort");
+		Vector<String> sortedData = TextBuddy.readDataFromFile();
+		for(int index = 0; index < sortedData.size(); index++) {
+			assertEquals("Data sorted.", sortedList.elementAt(index),sortedData.elementAt(index));
+		}
+	}
+
+	@Test
+	public void testSearchMethod() {
+		assertEquals("\n2. brown fox\n",TextBuddy.executeCommand("search bro"));
+		assertEquals("\nNo results found.\n", TextBuddy.executeCommand("search abc"));
+	}
+
+	@Test
+	public void testCompactMethod() {
+		generateCompactedData();
+		TextBuddy.executeCommand("compact");
+		Vector<String> compactedData = TextBuddy.readDataFromFile();
+
+		for(int index = 0; index < compactedData.size(); index++) {
+			assertEquals("Data compacted.", compactedList.elementAt(index), compactedData.elementAt(index));
+		}
+	}
+
+
+
+
+}

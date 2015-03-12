@@ -34,9 +34,9 @@ public class TextBuddy {
 	private static final String MESSAGE_NORESULTS = "\nNo results found.\n";
 	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
 	private static final String MESSAGE_ERROR = "Unrecogonized command type";
-	private static final String MESSAGE_INVALIDlineNum = "Invalid lineNum number.";
+	private static final String MESSAGE_INVALIDLINE = "Invalid lineNum number.";
 	private static final String MESSAGE_COMMAND = "\ncommand: ";
-	private static final String MESSAGE_NEWlineNum = "\n";
+	private static final String MESSAGE_NEWLINE = "\n";
 	private static final String MESSAGE_NOCHAR = "";
 	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
 	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
@@ -59,21 +59,24 @@ public class TextBuddy {
 		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, COMPACT_TEXT, INVALID, EXIT
 	};
 
-	public static void main(String[] args) {
+	public void run(String[] args) throws IOException {
 		//if user did not input any filename, the default one will be assumed.
 		if(args.length != 0) {
 			fileName = args[0];
 		}
-
 		showToUser(checkFileExist());	
 
 		while (true) {
-			showToUser(MESSAGE_COMMAND);
-			String command = scanner.nextLine();
-			String userCommand = command;
-			String feedback = executeCommand(userCommand);
-			showToUser(feedback);
+			readCommand();
 		}	
+	}
+
+	private void readCommand() throws IOException {
+		showToUser(MESSAGE_COMMAND);
+		String command = scanner.nextLine();
+		String userCommand = command;
+		String feedback = executeCommand(userCommand);
+		showToUser(feedback);
 	}
 
 	private static void showToUser(String text) {
@@ -98,20 +101,20 @@ public class TextBuddy {
 		return String.format(MESSAGE_WELCOME,fileName);
 	}
 
-	public static String executeCommand(String userCommand) {
+	public static String executeCommand(String userCommand) throws IOException {
 		userCommand = userCommand.trim();
 		String userText = MESSAGE_NOCHAR;
 
 		if(userCommand.matches(PATTERN_COMMANDS_TYPE1)) {
 			showToUser(MESSAGE_EMPTYCONTENT);
-			return MESSAGE_NEWlineNum;
+			return MESSAGE_NEWLINE;
 
 		} else if(!(userCommand.matches(PATTERN_COMMANDS_TYPE2))) {
 			userText = userCommand.substring(userCommand.indexOf(' ')+1);
 			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
 
 		} else {
-			userText = MESSAGE_NEWlineNum;
+			userText = MESSAGE_NEWLINE;
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userCommand);
@@ -187,13 +190,21 @@ public class TextBuddy {
 	}
 
 	/**
-	 * This operation count the number of lineNums in the text
+	 * This operation count the number of lines in the text
 	 * 
 	 * @return count
+	 * @throws FileNotFoundException 
 	 */
-	private static int getCount(){
-		dataFromFile = readDataFromFile();
-		return dataFromFile.size();
+	private static int getCount() throws FileNotFoundException{
+		int lineNum = 0;
+		sc = new Scanner(new FileReader(fileName));
+
+		while(sc.hasNextLine()){
+			lineNum++;
+			sc.nextLine();
+		}
+
+		return lineNum;
 	}
 
 	public static Vector<String> readDataFromFile() {
@@ -208,8 +219,10 @@ public class TextBuddy {
 				content = trimText(content);
 				dataFromFile.add(content);
 			}
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+
 		} finally {
 			if(sc!= null) {
 				sc.close();
@@ -238,7 +251,7 @@ public class TextBuddy {
 		return emptyFile;
 	}
 
-	private static String clearFile(boolean isClearCommand) {
+	public static String clearFile(boolean isClearCommand) {
 		PrintWriter pw = null;
 
 		try {
@@ -246,6 +259,7 @@ public class TextBuddy {
 
 		} catch(IOException e) {
 			e.printStackTrace();
+
 		} finally {
 			if(pw != null) {
 				pw.close();
@@ -267,13 +281,13 @@ public class TextBuddy {
 		}
 	}
 
-	private static String deleteText(String userText) {
+	private static String deleteText(String userText) throws IOException {
 		int lineNum = Integer.parseInt(userText) - 1;
 		dataFromFile.clear();
 
 		if(lineNum >= getCount()) {
-			showToUser(MESSAGE_NEWlineNum);
-			showToUser(MESSAGE_INVALIDlineNum);
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(MESSAGE_INVALIDLINE);
 			return MESSAGE_NOCHAR;
 		}
 
@@ -292,41 +306,23 @@ public class TextBuddy {
 		return String.format(MESSAGE_DELETED, fileName, content);
 	}
 
-	private static String addText(String userText) {
+	private static String addText(String userText) throws IOException {
 		PrintWriter editedFile = null;
-		int lineNum = 0;
+		int lineNum = getCount();
 
-		try {
-			sc = new Scanner(new FileReader(fileName));
+		editedFile = new PrintWriter(new FileWriter(fileName, true));
+		editedFile.println((lineNum+1)+". "+ userText);
 
-			while(sc.hasNextLine()) {
-				lineNum++;
-				sc.nextLine();
-			}
-
-			editedFile = new PrintWriter(new FileWriter(fileName, true));
-			editedFile.println((lineNum+1)+". "+ userText);
-
-		} catch(IOException e) {
-			e.printStackTrace();
-		} finally {
-			if(sc!= null) {
-				sc.close();
-			}
-
-			if(editedFile != null) {
-				editedFile.close();
-			}
+		if(editedFile != null) {
+			editedFile.close();
 		}
 
 		return String.format(MESSAGE_ADDED, fileName, userText);		
 	}
 
-	public static String sortFile() {
+	public static String sortFile() throws IOException {
 		if(!processDataFromFile()) {
-
 			clearFile(false);
-
 			Collections.sort(dataFromFile, String.CASE_INSENSITIVE_ORDER);
 
 			for(int index = 0; index < dataFromFile.size(); index++) {
@@ -338,7 +334,6 @@ public class TextBuddy {
 		} else {
 			return MESSAGE_NOCHAR;
 		}
-
 	}
 
 	private static StringBuilder searchFile(String userText) {
@@ -360,18 +355,15 @@ public class TextBuddy {
 			if(!isFound) {
 				searchResults.append(MESSAGE_NORESULTS);
 			}
-
 		} 
-
 		return searchResults;
 	}
 
-	private static String removeDuplicates() {
-
+	private static String removeDuplicates() throws IOException {
 		Set<String> uniqueData = new LinkedHashSet<String>();
+
 		if(!processDataFromFile()) {
 			uniqueData.addAll(dataFromFile);
-
 			dataFromFile.clear();
 			dataFromFile.addAll(uniqueData);
 			clearFile(false);
@@ -385,6 +377,5 @@ public class TextBuddy {
 			return MESSAGE_NOCHAR;
 		}
 	}
-
 
 }

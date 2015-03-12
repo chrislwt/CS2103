@@ -2,22 +2,24 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="lineNum" key="selection"/>
+		<item value="processData" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="processData"/>
+			<item value="readData"/>
+			<item value="public static"/>
+			<item value="private static"/>
 			<item value="lineNumNum"/>
 			<item value="sc.hasNextlineNum"/>
 			<item value="sc.nextLineNum"/>
 			<item value="sc.nextlineNum"/>
-			<item value="line"/>
-			<item value="clearFile(false)"/>
-			<item value="newline"/>
-			<item value="new_line"/>
 		</list>
 		<list key="replacehistory">
+			<item value="public"/>
+			<item value="public static"/>
 			<item value="lineNum"/>
 			<item value="sc.hasNextLine"/>
 			<item value="sc.nextLine"/>

@@ -1,0 +1,372 @@
+import java.util.LinkedHashSet;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.Vector;
+import java.util.Collections;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.File;
+
+
+
+/**
+ * This class is used to store and retrieve text from a text file entered by the user.
+ * User can add, delete, clear, sort and search contents through commands. User can choose to work on an
+ * existing file or create a new one. The file is saved after every command user entered.
+
+
+ * @author Christina Lee Wei Ting A0098824N
+ */
+
+public class TextBuddy {
+
+	private static final String MESSAGE_WELCOME = "\nWelcome to TextBuddy. %1$s is ready for use\n";
+	private static final String MESSAGE_ADDED = "\nadded to %1$s : \"%2$s\"\n";
+	private static final String MESSAGE_DELETED = "\ndeleted from %1$s : \"%2$s\"\n";
+	private static final String MESSAGE_CLEARED = "\nall content deleted from %1$s\n";
+	private static final String MESSAGE_SORTED = "\n%1$s is sorted\n";
+	private static final String MESSAGE_SEARCHED = "\nSearch results for \"%1$s\" :\n";
+	private static final String MESSAGE_DISPLAY = "\n%1$s. %2$s\n";
+	private static final String MESSAGE_REMOVEDUPLICATE = "\nDuplicates removed from %1$s\n";
+	private static final String MESSAGE_NORESULTS = "\nNo results found.\n";
+	private static final String MESSAGE_EMPTYFILE = "\n%1$s is empty\n";
+	private static final String MESSAGE_ERROR = "Unrecogonized command type";
+	private static final String MESSAGE_INVALIDLINE = "Invalid lineNum number.";
+	private static final String MESSAGE_COMMAND = "\ncommand: ";
+	private static final String MESSAGE_NEWLINE = "\n";
+	private static final String MESSAGE_NOCHAR = "";
+	private static final String MESSAGE_EMPTYCONTENT = "\nContent cannot be empty!";
+	private static final String PATTERN_COMMANDS_TYPE1 = "add|delete|search";
+	private static final String PATTERN_COMMANDS_TYPE2 = "clear|sort|exit|display|compact";
+
+
+	/**
+	 * These variables are declared for the whole class so any methods can access
+	 * 
+	 */
+	public static String fileName = "mytextfile.txt";
+	private static String content = null;
+	private static Scanner sc = null;
+	private static Scanner scanner = new Scanner(System.in);
+	private static boolean isFileExist = false;
+	private static Vector<String> dataFromFile = new Vector<String>();
+
+	// These are the possible command types
+	enum COMMAND_TYPE {
+		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, COMPACT_TEXT, INVALID, EXIT
+	};
+
+	public static void main(String[] args) throws IOException {
+		//if user did not input any filename, the default one will be assumed.
+		if(args.length != 0) {
+			fileName = args[0];
+		}
+
+		showToUser(checkFileExist());	
+
+		while (true) {
+			showToUser(MESSAGE_COMMAND);
+			String command = scanner.nextLine();
+			String userCommand = command;
+			String feedback = executeCommand(userCommand);
+			showToUser(feedback);
+		}	
+	}
+
+	private static void showToUser(String text) {
+		System.out.print(text);
+	}
+
+	/**
+	 * This operation is used to check if text file exist
+	 * if yes, it will append else it will create the file
+	 * 
+	 * @param fileName is the full string user has entered as the argument
+	 * @return the welcome message
+	 */
+	public static String checkFileExist() {
+		File textFile = new File(fileName);
+
+		if(!(textFile.isFile())) {
+			isFileExist = false;
+			clearFile(isFileExist);
+		}
+
+		return String.format(MESSAGE_WELCOME,fileName);
+	}
+
+	public static String executeCommand(String userCommand) throws IOException {
+		userCommand = userCommand.trim();
+		String userText = MESSAGE_NOCHAR;
+
+		if(userCommand.matches(PATTERN_COMMANDS_TYPE1)) {
+			showToUser(MESSAGE_EMPTYCONTENT);
+			return MESSAGE_NEWLINE;
+
+		} else if(!(userCommand.matches(PATTERN_COMMANDS_TYPE2))) {
+			userText = userCommand.substring(userCommand.indexOf(' ')+1);
+			userCommand = userCommand.substring(0, userCommand.indexOf(' '));
+
+		} else {
+			userText = MESSAGE_NEWLINE;
+		}
+
+		COMMAND_TYPE commandType = determineCommandType(userCommand);
+
+		switch (commandType) {
+		case ADD_TEXT:	
+			return addText(userText);	
+		case DELETE_TEXT:
+			return deleteText(userText);
+		case DISPLAY_TEXT: 
+			displayFile();
+			return MESSAGE_NOCHAR;
+		case CLEAR_TEXT: 
+			return clearFile(true);	
+		case SORT_TEXT:
+			return sortFile();
+		case SEARCH_TEXT:
+			return searchFile(userText).toString();
+		case COMPACT_TEXT:
+			return removeDuplicates();
+		case EXIT:
+			System.exit(0);	
+		default:
+			//throw an error if the command is not recognized
+			throw new Error(MESSAGE_ERROR);
+		}
+	}
+
+	/**
+	 * This operation determines which of the supported command types the user
+	 * wants to perform
+	 * 
+	 * @param commandTypeString
+	 *            is the first word of the user command
+	 */
+	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
+		if(commandTypeString.equals(null)) {
+			throw new Error(MESSAGE_ERROR);
+		} else {
+			commandTypeString = commandTypeString.toLowerCase();
+		}
+
+		switch(commandTypeString) {
+		case "add":
+			return COMMAND_TYPE.ADD_TEXT;
+		case "delete":
+			return COMMAND_TYPE.DELETE_TEXT;
+		case "display":
+			return COMMAND_TYPE.DISPLAY_TEXT;
+		case "clear":
+			return COMMAND_TYPE.CLEAR_TEXT;
+		case "sort":
+			return COMMAND_TYPE.SORT_TEXT;
+		case "search":
+			return COMMAND_TYPE.SEARCH_TEXT;
+		case "compact":
+			return COMMAND_TYPE.COMPACT_TEXT;
+		case "exit":
+			return COMMAND_TYPE.EXIT;
+		default:
+			return COMMAND_TYPE.INVALID;
+		}
+	}
+
+	/**
+	 * This operation remove the lineNum numbers in the text
+	 * 
+	 * @param originalText
+	 *            original text found in the textfile
+	 */
+	private static String trimText(String originalText) {
+		return originalText.substring(originalText.indexOf(' ')+1);
+	}
+
+	/**
+	 * This operation count the number of lines in the text
+	 * 
+	 * @return count
+	 */
+	private static int getCount(){
+		dataFromFile = readDataFromFile();
+		return dataFromFile.size();
+	}
+
+	public static Vector<String> readDataFromFile() {
+		String content = null;
+		Vector<String> dataFromFile = new Vector<String>();
+		dataFromFile.clear();
+
+		try {
+			sc = new Scanner(new FileReader(fileName));
+			while(sc.hasNextLine()) {
+				content = sc.nextLine();
+				content = trimText(content);
+				dataFromFile.add(content);
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+
+		} finally {
+			if(sc!= null) {
+				sc.close();
+			}
+		}
+
+		return dataFromFile;
+	}
+
+	/** This operation checks if file is empty.
+	 * 
+	 * @return emptyFile
+	 */
+	private static boolean processDataFromFile() {
+		boolean emptyFile;
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
+
+		if(dataFromFile.isEmpty()) {
+			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
+			emptyFile = true;
+		} else {
+			emptyFile = false;
+		}
+
+		return emptyFile;
+	}
+
+	public static String clearFile(boolean isClearCommand) {
+		PrintWriter pw = null;
+
+		try {
+			pw = new PrintWriter(fileName);
+
+		} catch(IOException e) {
+			e.printStackTrace();
+
+		} finally {
+			if(pw != null) {
+				pw.close();
+			}
+		}
+
+		if(isClearCommand) {
+			return String.format(MESSAGE_CLEARED, fileName);
+		}
+
+		return null;
+	}
+
+	private static void displayFile() {
+		processDataFromFile();
+
+		for(int index = 0; index < dataFromFile.size(); index++) {
+			showToUser(String.format(MESSAGE_DISPLAY, index+1, dataFromFile.elementAt(index)));
+		}
+	}
+
+	private static String deleteText(String userText) throws IOException {
+		int lineNum = Integer.parseInt(userText) - 1;
+		dataFromFile.clear();
+
+		if(lineNum >= getCount()) {
+			showToUser(MESSAGE_NEWLINE);
+			showToUser(MESSAGE_INVALIDLINE);
+			return MESSAGE_NOCHAR;
+		}
+
+		dataFromFile = readDataFromFile();
+
+		clearFile(true);
+
+		for(int index=0; index < dataFromFile.size(); index++) {
+			if(index != lineNum) {
+				addText(dataFromFile.elementAt(index));
+			} else {
+				content = dataFromFile.elementAt(index);
+			}
+		}
+
+		return String.format(MESSAGE_DELETED, fileName, content);
+	}
+
+	private static String addText(String userText) throws IOException {
+		PrintWriter editedFile = null;
+		int lineNum = 0;
+
+		lineNum = getCount();
+
+		editedFile = new PrintWriter(new FileWriter(fileName, true));
+		editedFile.println((lineNum+1)+". "+ userText);
+
+		if(editedFile != null) {
+			editedFile.close();
+		}
+
+		return String.format(MESSAGE_ADDED, fileName, userText);		
+	}
+
+	public static String sortFile() throws IOException {
+		if(!processDataFromFile()) {
+			clearFile(false);
+			Collections.sort(dataFromFile, String.CASE_INSENSITIVE_ORDER);
+
+			for(int index = 0; index < dataFromFile.size(); index++) {
+				addText(dataFromFile.elementAt(index));
+			}
+
+			return String.format(MESSAGE_SORTED,fileName);
+
+		} else {
+			return MESSAGE_NOCHAR;
+		}
+	}
+
+	private static StringBuilder searchFile(String userText) {
+		boolean isFound = false;
+		dataFromFile.clear();
+		dataFromFile = readDataFromFile();
+		StringBuilder searchResults = new StringBuilder();
+
+		if(!processDataFromFile()) {
+			showToUser(String.format(MESSAGE_SEARCHED, userText));
+
+			for(int index = 0; index < dataFromFile.size(); index++) {
+				if(dataFromFile.elementAt(index).contains(userText)) {
+					isFound = true;
+					searchResults.append(String.format(MESSAGE_DISPLAY, index+1, dataFromFile.elementAt(index)));
+				}
+			}
+
+			if(!isFound) {
+				searchResults.append(MESSAGE_NORESULTS);
+			}
+		} 
+		return searchResults;
+	}
+
+	private static String removeDuplicates() throws IOException {
+		Set<String> uniqueData = new LinkedHashSet<String>();
+
+		if(!processDataFromFile()) {
+			uniqueData.addAll(dataFromFile);
+			dataFromFile.clear();
+			dataFromFile.addAll(uniqueData);
+			clearFile(false);
+
+			for(int index = 0; index < dataFromFile.size(); index++) {
+				addText(dataFromFile.elementAt(index));
+			}
+			return String.format(MESSAGE_REMOVEDUPLICATE,fileName);
+
+		} else {
+			return MESSAGE_NOCHAR;
+		}
+	}
+
+}

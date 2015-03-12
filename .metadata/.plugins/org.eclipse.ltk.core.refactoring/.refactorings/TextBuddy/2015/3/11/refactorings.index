@@ -3,3 +3,4 @@
 1426072294962	Extract method 'processDataFromFile'
 1426144971179	Extract method 'loadFile'
 1426145582134	Delete element
+1426152148152	Extract method 'readCommand'
