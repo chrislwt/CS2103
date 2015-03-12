@@ -1,3 +1,5 @@
 1426062229189	Delete elements
 1426072054170	Extract method 'checkDataEmpty'
 1426072294962	Extract method 'processDataFromFile'
+1426144971179	Extract method 'loadFile'
+1426145582134	Delete element

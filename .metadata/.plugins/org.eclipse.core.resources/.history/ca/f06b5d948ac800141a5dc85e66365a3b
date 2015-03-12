@@ -17,7 +17,7 @@ public class TextBuddyTest {
 		generateSortedData();
 		generateCompactedData();
 		TextBuddy.fileName = testFile;
-		TextBuddy.checkFileExist();
+		ReadWriteFile.readFile(testFile);
 		testAll();
 	}
 

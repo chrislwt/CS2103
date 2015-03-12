@@ -2,20 +2,25 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="display" key="selection"/>
+		<item value="lineNum" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="display"/>
-			<item value="filestatus"/>
-			<item value="scanner"/>
-			<item value="vector"/>
-			<item value="){"/>
-			<item value="System.out.println"/>
+			<item value="lineNumNum"/>
+			<item value="sc.hasNextlineNum"/>
+			<item value="sc.nextLineNum"/>
+			<item value="sc.nextlineNum"/>
+			<item value="line"/>
+			<item value="clearFile(false)"/>
+			<item value="newline"/>
+			<item value="new_line"/>
 		</list>
 		<list key="replacehistory">
+			<item value="lineNum"/>
+			<item value="sc.hasNextLine"/>
+			<item value="sc.nextLine"/>
 			<item value=") {"/>
 		</list>
 	</section>
@@ -23,7 +28,7 @@
 		<item value="305" key="DIALOG_WIDTH"/>
 		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
 		<item value="442" key="DIALOG_HEIGHT"/>
-		<item value="873" key="DIALOG_X_ORIGIN"/>
-		<item value="548" key="DIALOG_Y_ORIGIN"/>
+		<item value="333" key="DIALOG_X_ORIGIN"/>
+		<item value="478" key="DIALOG_Y_ORIGIN"/>
 	</section>
 </section>

@@ -1,0 +1,47 @@
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+
+public class ReadWriteFile {
+	private static final String MESSAGE_WELCOME = "\nWelcome to TextBuddy. %1$s is ready for use\n";
+	public static final String defaultFileName = "mytextfile.txt";
+	
+	/**
+	 * This operation is used to check if text file exist
+	 * if yes, it will append else it will create the file
+	 * 
+	 * @param fileName is the full string user has entered as the argument
+	 * @return the welcome message
+	 */
+	public String readFile() throws IOException {
+		return readFile(defaultFileName);
+	}
+	
+	public static String readFile(String fileName) throws IOException {
+		File textFile = new File(fileName);
+
+		if(!(textFile.exists())) {
+			textFile.createNewFile();
+		}
+
+		return String.format(MESSAGE_WELCOME,fileName);
+	}
+	
+	public void writeFile(String fileName) {
+		PrintWriter pw = null;
+
+		try {
+			pw = new PrintWriter(fileName);
+
+		} catch(IOException e) {
+			e.printStackTrace();
+			
+		} finally {
+			if(pw != null) {
+				pw.close();
+			}
+		}
+	}
+	
+}

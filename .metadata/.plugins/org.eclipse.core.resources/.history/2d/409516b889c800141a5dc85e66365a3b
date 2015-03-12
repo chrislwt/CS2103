@@ -53,19 +53,15 @@ public class TextBuddy {
 	private static Scanner scanner = new Scanner(System.in);
 	private static boolean isFileExist = false;
 	private static Vector<String> dataFromFile = new Vector<String>();
+	private static ReadWriteFile readWriteOp = new ReadWriteFile();
 
 	// These are the possible command types
 	enum COMMAND_TYPE {
 		ADD_TEXT, DELETE_TEXT, DISPLAY_TEXT, CLEAR_TEXT, SORT_TEXT, SEARCH_TEXT, COMPACT_TEXT, INVALID, EXIT
 	};
 
-	public static void main(String[] args) {
-		//if user did not input any filename, the default one will be assumed.
-		if(args.length != 0) {
-			fileName = args[0];
-		}
-
-		showToUser(checkFileExist());	
+	public static void main(String[] args) throws IOException {
+		loadFile(args);
 
 		while (true) {
 			showToUser(MESSAGE_COMMAND);
@@ -76,26 +72,18 @@ public class TextBuddy {
 		}	
 	}
 
-	private static void showToUser(String text) {
-		System.out.print(text);
+	private static void loadFile(String[] args) throws IOException {
+		//if user did not input any filename, the default one will be assumed.
+		if(args.length != 0) {
+			fileName = args[0];
+			showToUser(readWriteOp.readFile(fileName));
+		} else {
+			showToUser(readWriteOp.readFile());
+		}
 	}
 
-	/**
-	 * This operation is used to check if text file exist
-	 * if yes, it will append else it will create the file
-	 * 
-	 * @param fileName is the full string user has entered as the argument
-	 * @return the welcome message
-	 */
-	public static String checkFileExist() {
-		File textFile = new File(fileName);
-
-		if(!(textFile.isFile())) {
-			isFileExist = false;
-			clearFile(isFileExist);
-		}
-
-		return String.format(MESSAGE_WELCOME,fileName);
+	private static void showToUser(String text) {
+		System.out.print(text);
 	}
 
 	public static String executeCommand(String userCommand) {
@@ -227,14 +215,14 @@ public class TextBuddy {
 		boolean emptyFile;
 		dataFromFile.clear();
 		dataFromFile = readDataFromFile();
-
+		
 		if(dataFromFile.isEmpty()) {
 			showToUser(String.format(MESSAGE_EMPTYFILE, fileName));
 			emptyFile = true;
 		} else {
 			emptyFile = false;
 		}
-
+		
 		return emptyFile;
 	}
 

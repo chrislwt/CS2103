@@ -1,6 +1,5 @@
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import org.junit.Test;
@@ -13,7 +12,7 @@ public class TextBuddyTest {
 	private static String testFile = "testFile.txt";
 
 	@Test
-	public void test() throws IOException {
+	public void test() {
 		generateSortedData();
 		generateCompactedData();
 		TextBuddy.fileName = testFile;

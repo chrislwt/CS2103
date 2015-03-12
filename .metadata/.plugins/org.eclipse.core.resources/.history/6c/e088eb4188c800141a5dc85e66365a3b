@@ -1,0 +1,23 @@
+import java.io.File;
+import java.io.IOException;
+
+
+public class ReadWriteFile {
+	private static final String MESSAGE_WELCOME = "\nWelcome to TextBuddy. %1$s is ready for use\n";
+	public static final String defaultFileName = "mytextfile.txt";
+	
+	public static String readFile() throws IOException {
+		return readFile(defaultFileName);
+	}
+	
+	public static String readFile(String fileName) throws IOException {
+		File textFile = new File(fileName);
+
+		if(!(textFile.exists())) {
+			textFile.createNewFile();
+		}
+
+		return String.format(MESSAGE_WELCOME,fileName);
+	}
+	
+}
